@@ -20,7 +20,22 @@ buster.testCase('MVC Library Tests: ', {
     },
 
     'Create a View instance with configuration settings': function(){
-        var rendered = false;
+        var View = new MVC.View({
+            el: document.getElementById('js-view'),
+            
+            events: {
+                'click .js-button': 'render'
+            }
+        });
+
+        assert.match(View.el, {
+            tagName: 'div',
+            innerHTML: '<button class="js-button">Create a list item</button>'
+        });
+    },
+
+    'Ensure event delegation is working': function(){
+        var rendered, done = false;
         
         var View = new MVC.View({
             el: document.getElementById('js-view'),
@@ -34,14 +49,23 @@ buster.testCase('MVC Library Tests: ', {
             }
         });
 
-        assert.match(View.el, {
-            tagName: 'div',
-            innerHTML: '<button class="js-button">Create a list item</button>'
+        var BodyView = new MVC.View({
+            events: {
+                'click': 'doSomething'
+            },
+
+            doSomething: function (e) {
+                done = true;
+            }
         });
 
         $('.js-button').trigger('click');
 
         assert.same(rendered, true);
+
+        $(document.body).trigger('click');
+
+        assert.same(done, true);
     }
 
 });
